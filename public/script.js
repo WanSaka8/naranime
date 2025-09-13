@@ -1,14 +1,17 @@
 const API = "https://kitanime-api.vercel.app/v1";
+
 let currentPage = 1;
-let currentMode = "ongoing"; // bisa "ongoing" / "complete" / "search"
+let currentMode = "ongoing"; // "ongoing" | "complete" | "search"
 let currentKeyword = "";
 
+// Helper fetch JSON
 async function fetchJSON(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error('HTTP ' + res.status);
   return res.json();
 }
 
+// Helper buat element
 function el(tag, cls, html) {
   const d = document.createElement(tag);
   if (cls) d.className = cls;
@@ -16,6 +19,7 @@ function el(tag, cls, html) {
   return d;
 }
 
+// Load anime list
 async function loadAnime(page = 1, append = false) {
   try {
     let url = "";
@@ -29,6 +33,7 @@ async function loadAnime(page = 1, append = false) {
 
     const r = await fetchJSON(url);
     let list = r.data || r;
+
     const wrap = document.getElementById('anime-list');
     if (!append) wrap.innerHTML = '';
 
@@ -40,18 +45,22 @@ async function loadAnime(page = 1, append = false) {
     list.forEach(a => {
       const title = a.title || a.name || a.anime_title || a.name_romaji || a.slug || 'Untitled';
       const img = a.image || a.thumb || a.poster || a.cover || '';
+
       const card = el('div', 'anime-card');
-      card.innerHTML = `<img src="${img}" alt="${title}" onerror="this.style.opacity=.4">
-                        <div style="margin-top:6px">${title}</div>`;
+      card.innerHTML = `
+        <img src="${img}" alt="${title}" onerror="this.style.opacity=.4">
+        <div style="margin-top:6px">${title}</div>
+      `;
+
       if (!a.slug) {
         console.warn("Slug hilang, data:", a);
       }
 
       card.addEventListener('click', () => {
         if (a.slug) {
-          loadEpisodes(a.slug);
+          loadEpisodes(a.slug, title);
         } else {
-          alert("Slug tidak tersedia untuk anime ini, tidak bisa load episode.");
+          alert("Slug tidak tersedia untuk anime ini.");
         }
       });
 
@@ -59,31 +68,34 @@ async function loadAnime(page = 1, append = false) {
     });
   } catch (err) {
     console.error(err);
-    document.getElementById('anime-list').innerHTML = '<div class="muted">Failed to load anime list</div>';
+    document.getElementById('anime-list').innerHTML =
+      '<div class="muted">Failed to load anime list</div>';
   }
 }
 
-// Episode loader (tidak diubah)
+// Load episodes & tampilkan player section
 async function loadEpisodes(slug) {
   try {
     const r = await fetchJSON(API + "/anime/" + encodeURIComponent(slug) + "/episodes");
     let episodes = r.data?.episodes || r.data || r;
+
     if (!Array.isArray(episodes) || episodes.length === 0) {
       alert('No episodes found for ' + slug);
       return;
     }
-    const wrap = document.getElementById('video-player');
+
+    // >>> Tampilkan player section kalau sebelumnya hidden
+    document.getElementById("player-section").style.display = "block";
+
+    const wrap = document.getElementById('episode-list');
     wrap.innerHTML = '';
     const title = document.getElementById('video-title');
-    title.textContent = 'Episodes for ' + slug;
+    title.textContent = slug;
+
     episodes.forEach(ep => {
       const epSlug = ep.slug || ep.episode_slug || ep.link;
-      if (!epSlug) {
-        console.warn("Episode slug hilang:", ep);
-        return;
-      }
-
-      const label = ep.episode || ep.number || ep.title || ep.label || epSlug;
+      if (!epSlug) return;
+      const label = ep.episode || ep.number || ep.title || epSlug;
       const btn = el('button', 'btn small', 'Ep ' + label);
       btn.addEventListener('click', () => playEpisodeBySlug(String(epSlug), title.textContent + ' - Ep ' + label));
       wrap.appendChild(btn);
@@ -94,12 +106,14 @@ async function loadEpisodes(slug) {
   }
 }
 
-// Play episode (revisi dengan fullscreen fix)
+
+// Play episode
 async function playEpisodeBySlug(epSlug, title) {
   try {
     const r = await fetchJSON(API + "/episode/" + encodeURIComponent(epSlug));
     const data = r.data || r;
     console.log('episode detail', data);
+
     const playable = pickPlayable(data);
     const wrap = document.getElementById('video-player');
     wrap.innerHTML = '';
@@ -143,7 +157,6 @@ async function playEpisodeBySlug(epSlug, title) {
     iframe.setAttribute("allowfullscreen", "true");
     iframe.setAttribute("webkitallowfullscreen", "true");
     iframe.setAttribute("mozallowfullscreen", "true");
-
     wrap.appendChild(iframe);
   } catch (err) {
     console.error(err);
@@ -151,7 +164,7 @@ async function playEpisodeBySlug(epSlug, title) {
   }
 }
 
-
+// Pilih URL playable
 function pickPlayable(data) {
   if (!data) return null;
   if (data.steramList) {
@@ -180,5 +193,5 @@ document.getElementById('load-more').addEventListener('click', () => {
   loadAnime(currentPage, true);
 });
 
-// initial load
+// Initial load
 loadAnime();

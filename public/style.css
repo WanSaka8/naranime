@@ -63,8 +63,8 @@ header h1 {
 /* Layout utama */
 main {
   flex: 1;
-  display: grid;
-  grid-template-columns: 2fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
   padding: 1.5rem;
 }
@@ -86,7 +86,7 @@ main {
 /* Anime List */
 #anime-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1rem;
 }
 
@@ -96,6 +96,9 @@ main {
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .anime-card:hover {
   transform: scale(1.05);
@@ -104,7 +107,7 @@ main {
 
 .anime-card img {
   width: 100%;
-  height: 200px;
+  height: 220px;
   object-fit: cover;
 }
 
@@ -126,9 +129,6 @@ main {
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
 }
 .btn:hover {
   background: linear-gradient(90deg, #10ac84, #1dd1a1);
@@ -155,12 +155,38 @@ main {
   border-radius: 8px;
 }
 
+/* Episode List */
+#episode-list {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 0.6rem;
+}
+
+.episode-btn {
+  background: #1dd1a1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 0.2rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.3s, transform 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.episode-btn:hover {
+  background: #10ac84;
+  transform: scale(1.05);
+}
+
+
 /* RESPONSIF */
 @media (max-width: 900px) {
-  main {
-    grid-template-columns: 1fr; /* jadi 1 kolom */
-  }
-
   #video-player {
     min-height: 240px;
   }
@@ -183,7 +209,7 @@ main {
   }
 
   .anime-card img {
-    height: 150px;
+    height: 160px;
   }
 
   #video-player {

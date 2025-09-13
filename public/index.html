@@ -16,19 +16,24 @@
   </header>
 
   <main>
+    <!-- Player Section (di atas, default hidden) -->
+    <section id="player-section" class="card" style="display:none;">
+  <h2 id="video-title">Player</h2>
+  <div id="video-player-wrap">
+    <div id="video-player" class="video-area small muted">Pilih episode untuk memutar</div>
+  </div>
+  <div id="episode-list"></div>
+</section>
+
+
+    <!-- Anime List -->
     <section id="list-section" class="card">
       <h2>Anime List</h2>
       <div id="anime-list" class="grid"></div>
       <button id="load-more" class="btn">Load More</button>
     </section>
-
-    <section id="player-section" class="card">
-      <h2 id="video-title">Player</h2>
-      <div id="video-player-wrap">
-        <div id="video-player" class="video-area small muted">Pilih episode untuk memutar</div>
-      </div>
-    </section>
   </main>
+
   <script src="script.js"></script>
 </body>
 </html>
