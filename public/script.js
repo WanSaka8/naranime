@@ -94,7 +94,7 @@ async function loadEpisodes(slug) {
   }
 }
 
-// Play episode (sama seperti punyamu)
+// Play episode (revisi dengan fullscreen fix)
 async function playEpisodeBySlug(epSlug, title) {
   try {
     const r = await fetchJSON(API + "/episode/" + encodeURIComponent(epSlug));
@@ -113,24 +113,44 @@ async function playEpisodeBySlug(epSlug, title) {
     const lower = playable.toLowerCase();
     if (lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.m3u8')) {
       const vid = el('video', '');
-      vid.controls = true; vid.autoplay = true; vid.style.width = '100%';
+      vid.controls = true;
+      vid.autoplay = true;
+      vid.style.width = '100%';
+      vid.style.maxHeight = '80vh'; // biar gak keluar layar
       vid.src = '/proxy?url=' + encodeURIComponent(playable);
+
+      // tombol fullscreen manual
+      const fsBtn = el('button', 'btn small', 'Fullscreen');
+      fsBtn.style.marginTop = "8px";
+      fsBtn.onclick = () => {
+        if (vid.requestFullscreen) vid.requestFullscreen();
+        else if (vid.webkitRequestFullscreen) vid.webkitRequestFullscreen();
+        else if (vid.msRequestFullscreen) vid.msRequestFullscreen();
+      };
+
       wrap.appendChild(vid);
+      wrap.appendChild(fsBtn);
       return;
     }
 
+    // iframe player
     const iframe = el('iframe');
     iframe.src = playable;
     iframe.width = '100%';
-    iframe.height = '480';
+    iframe.height = '500';
     iframe.frameBorder = '0';
     iframe.allow = 'autoplay; encrypted-media';
+    iframe.setAttribute("allowfullscreen", "true");
+    iframe.setAttribute("webkitallowfullscreen", "true");
+    iframe.setAttribute("mozallowfullscreen", "true");
+
     wrap.appendChild(iframe);
   } catch (err) {
     console.error(err);
     alert('Failed to play episode: ' + err.message);
   }
 }
+
 
 function pickPlayable(data) {
   if (!data) return null;
