@@ -84,21 +84,22 @@ main {
 }
 
 /* Anime List */
+/* Anime List */
 #anime-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 1rem;
 }
 
 .anime-card {
+  position: relative;
   background: #3b3b54;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 .anime-card:hover {
   transform: scale(1.05);
@@ -107,16 +108,44 @@ main {
 
 .anime-card img {
   width: 100%;
-  height: 220px;
+  height: 200px;
   object-fit: cover;
+}
+
+/* Badge Episode & Sub */
+.badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: #1e90ff;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.badge-sub {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: orange;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: bold;
 }
 
 .anime-card p {
   padding: 0.5rem;
   text-align: center;
   font-size: 0.9rem;
+  font-weight: 500;
   color: #f1f2f6;
+  background: #2f3542;
 }
+
 
 /* Tombol umum */
 .btn {
